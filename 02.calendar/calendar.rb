@@ -75,24 +75,16 @@ cal_hash.each do |cal_date, cal_day|
     print "  " * cal_day + " " * (cal_day - 1)
   end
 
-  # それぞれの曜日に応じて出力
-  # 日曜（`cal_day == 0`）以外は数字同士の間に入る半角スペースを挿入（`print ""`）
-  # 実行した日を反転するため、日にち表示（`print cal_date`）の前後に色反転のコードを挿入（`\e[7m`, `\e[0m`）
-  if cal_day == 6
-    print " "
-    print "\e[7m" if this_month_flag == 1 && cal_date == today_date
-    print cal_date + "\n"
-    print "\e[0m" if this_month_flag == 1 && cal_date == today_date
-  elsif cal_day == 0
-    print "\e[7m" if this_month_flag == 1 && cal_date == today_date
-    print cal_date
-    print "\e[0m" if this_month_flag == 1 && cal_date == today_date
-  else
-    print " "
-    print "\e[7m" if this_month_flag == 1 && cal_date == today_date
-    print cal_date
-    print "\e[0m" if this_month_flag == 1 && cal_date == today_date
-  end
+  # 日曜以外は日にちの前に数字同士の間に入る半角スペースを挿入
+  print " " if cal_day != 0
+  # 実行日の場合は日にちを反転（`\e[7m`）
+  print "\e[7m" if this_month_flag == 1 && cal_date == today_date
+  # 日にちを出力
+  print cal_date
+  # 実行日の場合は反転をリセット（`\e[7m`）
+  print "\e[0m" if this_month_flag == 1 && cal_date == today_date
+  # 土曜の場合は日にちの後に改行
+  print "\n" if cal_day == 6
 end
 
 # 最後に改行
