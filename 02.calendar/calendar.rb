@@ -4,28 +4,47 @@
 require 'optparse'
 require 'date'
 
+# オプションの受け取り
 options = ARGV.getopts('m:y:')
+
+# オプションで受け取った`m`, `y`をそれぞれ数値に変換
 month = options['m'].to_i
 year = options['y'].to_i
 
+# 月と年のオブジェクト生成
 month = Date.today.month if month == 0
 year = Date.today.year if year == 0
 
-fdate = Date.new(year, month, 1)
-ldate = Date.new(year, month, -1)
-last_date = ldate.day
+# 指定された月の初日・最終日を変数に格納
+cal_first_date = Date.new(year, month, 1)
+cal_last_date = Date.new(year, month, -1)
 
+# 最終日の数値を変数`last_date`に格納
+last_date = cal_last_date.day
+
+# 実行した日のオブジェクト生成
+today = Date.today
+
+# 指定された月が実行した日を含む場合はフラグ`this_month_flag`に1を代入
+this_month_flag = 0
+if today.month == month && today.year == year
+  this_month_flag = 1
+end
+
+# 1行目に表示する年月表示を作成・表示
 month = month.to_s
-month = " " + month if (/\A\d\z/).match(month)
 puts "      #{month}月 #{year}"
 
+# 2行目に表示する曜日行を作成・表示
 top = %w[日 月 火 水 木 金 土]
 puts top.join(" ")
 
-
+# 表示する1ヶ月分の日にちを配列で作成
 cal = (1..last_date).to_a
+
+# 表示する1ヶ月分の日にち（数字）にハッシュで曜日を割り当て
 cal_hash = {}
-i = fdate.wday
+i = cal_first_date.wday
 cal.each do |c|
   cal_hash[c] = i
   if i < 6
@@ -35,145 +54,46 @@ cal.each do |c|
   end
 end
 
-result = ""
-cal_hash.each do |k, v|
-  k = k.to_s
-  if /\A\d\z/.match(k)
-    k = " " + k
+# 変数`today_date`に実行した日の数字を代入（反転表示の準備）
+today_date = today.day.to_s
+
+# カレンダーの日付部分の作成・表示
+# ハッシュからeachメソッドで日にち・曜日をループ開始
+cal_hash.each do |cal_date, cal_day|
+
+  # 日にちを文字列化
+  cal_date = cal_date.to_s
+
+  # 日にちが1桁なら頭に半角スペースを付ける
+  if /\A\d\z/.match(cal_date)
+    cal_date = " " + cal_date
   end
 
-  if k == " 1"
-    result = "  " * v + " " * (v - 1)
+  # 1日の曜日によって1日の位置を空白で調整
+  # 1日が日曜日の場合は調整不要なのでif文でその旨の条件指定
+  if cal_date == " 1" && cal_day != 0
+    print "  " * cal_day + " " * (cal_day - 1)
   end
 
-  if v == 6
-    result = result + " " + k + "\n"
-  elsif v == 0
-    result = result + k
+  # それぞれの曜日に応じて出力
+  # 日曜（`cal_day == 0`）以外は数字同士の間に入る半角スペースを挿入（`print ""`）
+  # 実行した日を反転するため、日にち表示（`print cal_date`）の前後に色反転のコードを挿入（`\e[7m`, `\e[0m`）
+  if cal_day == 6
+    print " "
+    print "\e[7m" if this_month_flag == 1 && cal_date == today_date
+    print cal_date + "\n"
+    print "\e[0m" if this_month_flag == 1 && cal_date == today_date
+  elsif cal_day == 0
+    print "\e[7m" if this_month_flag == 1 && cal_date == today_date
+    print cal_date
+    print "\e[0m" if this_month_flag == 1 && cal_date == today_date
   else
-    result = result +  " " + k
+    print " "
+    print "\e[7m" if this_month_flag == 1 && cal_date == today_date
+    print cal_date
+    print "\e[0m" if this_month_flag == 1 && cal_date == today_date
   end
 end
-print result + "\n"
 
-
-__END__
-
-# options = ARGV.getopts('m:y:')
-# month = options['m'].to_i
-# year = options['y'].to_i
-
-month = 4
-year = 2023
-fdate = Date.new(year, month, 1)
-ldate = Date.new(year, month, -1)
-lastdate = ldate.strftime("%e")
-p lastdate.class
-p ldate.saturday?
-p ldate.day.class
-p fdate.wday
-p ldate.wday
-
-if fdate.wday == 6
-  cal_fdate = " 1\n"
-end
-p cal_fdate
-cal_second_week = (2..8).to_a
-j = cal_second_week.join
-cal = cal_fdate + j
-p cal
-
-month = month.to_s
-month = "" + month if (/\A\d\z/).match(month)
-puts "      #{month}月 #{year}"
-
-top = %w[日 月 火 水 木 金 土]
-puts top.join(" ")
-
-
-
-
-
-__END__
-fdate = Date.new(year, month, 1)
-
-wday = {
-  1 => "月",
-  2 => "火",
-  3 => "水",
-  4 => "木",
-  5 => "金",
-  6 => "土",
-  7 => "日"
-}
-fday = wday[fdate.cwday]
-p fday
-
-__END__
-
-wday = {
-  1 => "月",
-  2 => "火",
-  3 => "水",
-  4 => "木",
-  5 => "金",
-  6 => "土",
-  7 => "日"
-}
-lday = Date.new(year, month, -1)
-lastday = lday.strftime("%e")
-lastday = lastday.to_i
-
-# puts "#{fday} - #{wday[fday.cwday]}"
-# puts "#{lday} - #{wday[lday.cwday]}"
-
-# cal = {}
-# c = 1
-# (1..lastday).each do |r|
-#   cal[r] = wday[Date.new(year, month, r).cwday]
-#   c  += 1
-# end
-# p cal
-
-# cal.each do |k, v|
-#   k = k.to_s
-#   if v == "土"
-#     k = k + "\n"
-#     p k
-#     # cal[:k] = v
-#   end
-# end
-# p cal
-
-# p cal
-
-# foo = {}
-# foo[:ruby] = "good"
-# p foo
-# hash = { Ruby: "foo"}
-# p hash[:Ruby]
-
-# days = (1..lastday).to_a.join(" ")
-# p days
-# puts top[0]
-# puts top[1]
-
-# p Date.today
-# ld = "#{lday}"
-# l = ld.match(/\d\d\z/)
-# puts l
-
-# days = (1..31).to_a.join(" ")
-# days = (1..31).to_a
-
-# cal = {}
-# w = 1
-# days.each do |d|
-#   if d <= l.to_s.to_i
-#     cal[d] = wday[fday.cwday]
-#     d += 1
-#     w += 1
-#   end
-# end
-# p cal
-# 
+# 最後に改行
+print "\n"
