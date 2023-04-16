@@ -1,9 +1,7 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
-number = (1..20).to_a
-
-number.each do |num|
+(1..20).each do |num|
   if num % 15 == 0
     puts "FizzBuzz"
   elsif num % 5 == 0
