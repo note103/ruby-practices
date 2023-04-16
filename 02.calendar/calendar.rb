@@ -22,10 +22,10 @@ cal_last_date = Date.new(year, month, -1)
 # 最終日の数値を変数`last_date`に格納
 last_date = cal_last_date.day
 
-# 実行した日のオブジェクト生成
+# 実行日のオブジェクト生成
 today = Date.today
 
-# 指定された月が実行した日を含む場合はフラグ`this_month_flag`に1を代入
+# 指定された月が実行日を含む場合はフラグ`this_month_flag`に1を代入
 this_month_flag = 0
 if today.month == month && today.year == year
   this_month_flag = 1
@@ -54,13 +54,12 @@ cal.each do |c|
   end
 end
 
-# 変数`today_date`に実行した日の数字を代入（反転表示の準備）
+# 変数`today_date`に実行日の数字を代入（反転表示の準備）
 today_date = today.day.to_s
 
-# カレンダーの日付部分の作成・表示
+# カレンダー部分の作成・表示
 # ハッシュからeachメソッドで日にち・曜日をループ開始
 cal_hash.each do |cal_date, cal_day|
-
   # 日にちを文字列化
   cal_date = cal_date.to_s
 
@@ -75,9 +74,9 @@ cal_hash.each do |cal_date, cal_day|
     print "  " * cal_day + " " * (cal_day - 1)
   end
 
-  # 日曜以外は日にちの前に数字同士の間に入る半角スペースを挿入
+  # 日曜以外は日にちの前に日付同士の間に入る半角スペースを挿入
   print " " if cal_day != 0
-  # 実行日の場合は日にちを反転（`\e[7m`）
+  # 実行日の場合は反転（`\e[7m`）
   print "\e[7m" if this_month_flag == 1 && cal_date == today_date
   # 日にちを出力
   print cal_date
