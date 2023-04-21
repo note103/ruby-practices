@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# -*- coding: utf-8 -*-
+# frozen_string_literal: true
 
 require 'optparse'
 require 'date'
@@ -12,8 +12,8 @@ month = options['m'].to_i
 year = options['y'].to_i
 
 # 月と年のオブジェクト生成
-month = Date.today.month if month == 0
-year = Date.today.year if year == 0
+month = Date.today.month if month.zero?
+year = Date.today.year if year.zero?
 
 # 指定された月の初日・最終日を変数に格納
 cal_first_date = Date.new(year, month, 1)
@@ -27,9 +27,7 @@ today = Date.today
 
 # 指定された月が実行日を含む場合はフラグ`this_month_flag`に1を代入
 this_month_flag = 0
-if today.month == month && today.year == year
-  this_month_flag = 1
-end
+this_month_flag = 1 if today.month == month && today.year == year
 
 # 1行目に表示する年月表示を作成・表示
 month = month.to_s
@@ -37,7 +35,7 @@ puts "      #{month}月 #{year}"
 
 # 2行目に表示する曜日行を作成・表示
 top = %w[日 月 火 水 木 金 土]
-puts top.join(" ")
+puts top.join(' ')
 
 # 表示する1ヶ月分の日にちを配列で作成
 cal = (1..last_date).to_a
@@ -64,18 +62,14 @@ cal_hash.each do |cal_date, cal_day|
   cal_date = cal_date.to_s
 
   # 日にちが1桁なら頭に半角スペースを付ける
-  if /\A\d\z/.match(cal_date)
-    cal_date = " " + cal_date
-  end
+  cal_date = " #{cal_date}" if /\A\d\z/.match?(cal_date)
 
   # 1日の曜日によって1日の位置を空白で調整
   # 1日が日曜日の場合は調整不要なのでif文でその旨の条件指定
-  if cal_date == " 1" && cal_day != 0
-    print "  " * cal_day + " " * (cal_day - 1)
-  end
+  print '  ' * cal_day + ' ' * (cal_day - 1) if cal_date == ' 1' && cal_day != 0
 
   # 日曜以外は日にちの前に日付同士の間に入る半角スペースを挿入
-  print " " if cal_day != 0
+  print ' ' if cal_day != 0
   # 実行日の場合は反転（`\e[7m`）
   print "\e[7m" if this_month_flag == 1 && cal_date == today_date
   # 日にちを出力
