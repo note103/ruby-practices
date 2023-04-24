@@ -24,9 +24,7 @@ print '  ' * cal_first_date.wday + ' ' * (cal_first_date.wday - 1) unless cal_fi
 cal.each do |c|
   cal_date = c.day.to_s.rjust(2)
   print ' ' unless c.sunday?
-  print "\e[7m" if c == Date.today
-  print cal_date
-  print "\e[0m" if c == Date.today
+  print c == Date.today ? "\e[7m#{cal_date}\e[0m" : cal_date
   print "\n" if c.saturday?
 end
 
