@@ -19,7 +19,9 @@ puts top.join(' ')
 
 cal = (cal_first_date..cal_last_date).to_a
 
-print '  ' * cal_first_date.wday + ' ' * (cal_first_date.wday - 1) unless cal_first_date.sunday?
+BLANK_DATES = '  ' * cal_first_date.wday
+SPACE_BETWEEN_DATES = cal_first_date.sunday? ? '' : ' ' * (cal_first_date.wday - 1)
+print BLANK_DATES + SPACE_BETWEEN_DATES
 
 cal.each do |c|
   cal_date = c.day.to_s.rjust(2)
