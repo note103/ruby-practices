@@ -1,22 +1,22 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-score = ARGV[0]
-scores = score.split(',')
+input_score = ARGV[0]
+scores = input_score.split(',')
 
 shots = []
-scores.each do |s|
-  if s == 'X'
+scores.each do |score|
+  if score == 'X'
     shots << 10
     shots << 0
   else
-    shots << s.to_i
+    shots << score.to_i
   end
 end
 
 frames = []
-shots.each_slice(2) do |s|
-  frames << s
+shots.each_slice(2) do |shot|
+  frames << shot
 end
 
 point = 0
