@@ -16,22 +16,20 @@ end
 
 frames = shots.each_slice(2).to_a
 
-point = 0
-frames.each_with_index do |frame, index|
-  break if index == 10
+point = frames.take(10).each_with_index.sum do |frame, index|
 
   next_frame = frames[index + 1]
-  point += if frame[0] == 10 # strike
-             if next_frame[0] == 10
-               10 + next_frame[0] + frames[index + 2][0]
-             else
-               10 + next_frame.sum
-             end
-           elsif frame.sum == 10 # spare
-             10 + next_frame[0]
-           else
-             frame.sum
-           end
+  if frame[0] == 10 # strike
+    if next_frame[0] == 10
+      10 + next_frame[0] + frames[index + 2][0]
+    else
+      10 + next_frame.sum
+    end
+  elsif frame.sum == 10 # spare
+    10 + next_frame[0]
+  else
+    frame.sum
+  end
 end
 
 puts point
