@@ -9,8 +9,7 @@ def main
 end
 
 def fetch_current_directory_contents
-  contents = Dir.entries('.').sort
-  contents = contents.reject { |item| item.start_with?('.') }
+  contents = Dir.glob('*')
   contents.map { |item| File.ftype(item) == 'directory' ? "#{item}/" : item }
 end
 
