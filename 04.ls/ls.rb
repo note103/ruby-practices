@@ -19,9 +19,8 @@ end
 def create_grid_array(list, rows)
   grid = Array.new(rows) { Array.new(COLUMN) }
   list.each_with_index do |l, i|
-    row = i % rows
-    col = i / rows
-    grid[row][col] = l
+    column, row = i.divmod(rows)
+    grid[row][column] = l
   end
   grid
 end
