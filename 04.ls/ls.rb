@@ -4,13 +4,8 @@ SPACE_BETWEEN_COLUMNS = 1
 COLUMN = 3
 
 def main
-  list = fetch_current_directory_contents
+  list = Dir.glob('*')
   print_columns_format(list)
-end
-
-def fetch_current_directory_contents
-  contents = Dir.glob('*')
-  contents.map { |item| File.ftype(item) == 'directory' ? "#{item}/" : item }
 end
 
 def print_columns_format(list)
