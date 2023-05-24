@@ -4,22 +4,22 @@ SPACE_BETWEEN_COLUMNS = 1
 COLUMN = 3
 
 def main
-  list = Dir.glob('*')
-  print_columns_format(list)
+  filenames = Dir.glob('*')
+  print_columns_format(filenames)
 end
 
-def print_columns_format(list)
-  max_length = list.map(&:length).max
-  formatted_list = list.map { |l| l.ljust(max_length + SPACE_BETWEEN_COLUMNS) }
-  rows = (list.size.to_f / COLUMN).ceil
-  grid = create_grid_array(formatted_list, rows)
+def print_columns_format(filenames)
+  max_length = filenames.map(&:length).max
+  formatted_filenames = filenames.map { |l| l.ljust(max_length + SPACE_BETWEEN_COLUMNS) }
+  row_count = (filenames.size.to_f / COLUMN).ceil
+  grid = create_grid_array(formatted_filenames, row_count)
   print_formatted_grid(grid)
 end
 
-def create_grid_array(list, rows)
-  grid = Array.new(rows) { Array.new(COLUMN) }
-  list.each_with_index do |l, i|
-    column, row = i.divmod(rows)
+def create_grid_array(filenames, row_count)
+  grid = Array.new(row_count) { Array.new(COLUMN) }
+  filenames.each_with_index do |l, i|
+    column, row = i.divmod(row_count)
     grid[row][column] = l
   end
   grid
