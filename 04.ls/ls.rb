@@ -7,7 +7,8 @@ COLUMN = 3
 
 def main
   options = parse_options
-  filenames = options[:a] ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
+  flags = options[:a] ? File::FNM_DOTMATCH : 0
+  filenames = Dir.glob('*', flags)
   print_columns_format(filenames)
 end
 
