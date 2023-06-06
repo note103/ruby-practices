@@ -1,11 +1,24 @@
 # frozen_string_literal: true
 
+require 'optparse'
+
 SPACE_BETWEEN_COLUMNS = 1
 COLUMN = 3
 
 def main
-  filenames = Dir.glob('*')
+  options = parse_options
+  flags = options[:a] ? File::FNM_DOTMATCH : 0
+  filenames = Dir.glob('*', flags)
   print_columns_format(filenames)
+end
+
+def parse_options
+  options = {}
+  OptionParser.new do |opt|
+    opt.on('-a', 'Include hidden files') { |a| options[:a] = a }
+    opt.parse!(ARGV)
+  end
+  options
 end
 
 def print_columns_format(filenames)
