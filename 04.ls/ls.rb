@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 require 'optparse'
+require 'etc'
 
 SPACE_BETWEEN_COLUMNS = 1
 COLUMN = 3
 
 def main
   options = parse_options
-  filenames = options[:r] ? Dir.glob('*').reverse : Dir.glob('*')
-  print_columns_format(filenames)
+  filenames = Dir.glob('*')
+  options[:l] ? print_long_format(filenames) : print_columns_format(filenames)
 end
 
 def parse_options
@@ -16,9 +17,46 @@ def parse_options
   OptionParser.new do |opt|
     opt.on('-a', 'Include hidden files') { |a| options[:a] = a }
     opt.on('-r', 'Reverse the order of the sort') { |r| options[:r] = r }
+    opt.on('-l', 'Display detailed file information') { |l| options[:l] = l }
     opt.parse!(ARGV)
   end
   options
+end
+
+def print_long_format(filenames)
+  filenames.each do |file|
+    file_stat = File.stat(file)
+    print_file_type(file_stat)
+    print_permissions(file_stat)
+    print " #{file_stat.nlink.to_s.rjust(3)}"
+    print " #{Etc.getpwuid(file_stat.uid).name}"
+    print " #{Etc.getgrgid(file_stat.gid).name}"
+    print " #{file_stat.size.to_s.rjust(5)}"
+    print " #{file_stat.mtime.strftime('%_m %e %H:%M')}"
+    puts " #{file}"
+  end
+end
+
+def print_file_type(file_stat)
+  type_map = {
+    'file' => '-',
+    'directory' => 'd',
+    'link' => 'l'
+  }
+  print type_map.fetch(file_stat.ftype, '?')
+end
+
+def print_permissions(file_stat)
+  mode = file_stat.mode
+  print_permissions_for_user_type(mode >> 6)
+  print_permissions_for_user_type(mode >> 3)
+  print_permissions_for_user_type(mode)
+end
+
+def print_permissions_for_user_type(mode)
+  print(mode & 4 == 4 ? 'r' : '-')
+  print(mode & 2 == 2 ? 'w' : '-')
+  print(mode & 1 == 1 ? 'x' : '-')
 end
 
 def print_columns_format(filenames)
