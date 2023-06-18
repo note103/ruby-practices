@@ -71,7 +71,7 @@ end
 
 def print_columns_format(contents)
   max_length = contents.map(&:length).max
-  formatted_contents = contents.map { |l| l.ljust(max_length + SPACE_BETWEEN_COLUMNS) }
+  formatted_contents = contents.map { |item| item.ljust(max_length + SPACE_BETWEEN_COLUMNS) }
   row_count = (contents.size.to_f / COLUMN).ceil
   grid = create_grid_array(formatted_contents, row_count)
   print_formatted_grid(grid)
@@ -79,9 +79,9 @@ end
 
 def create_grid_array(contents, row_count)
   grid = Array.new(row_count) { Array.new(COLUMN) }
-  contents.each_with_index do |l, i|
-    column, row = i.divmod(row_count)
-    grid[row][column] = l
+  contents.each_with_index do |item, index|
+    column, row = index.divmod(row_count)
+    grid[row][column] = item
   end
   grid
 end
