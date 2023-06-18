@@ -5,6 +5,11 @@ require 'etc'
 
 SPACE_BETWEEN_COLUMNS = 1
 COLUMN = 3
+FILE_TYPE_MAP = {
+  'file' => '-',
+  'directory' => 'd',
+  'link' => 'l'
+}.freeze
 
 def main
   options = parse_options
@@ -26,7 +31,7 @@ end
 def print_long_format(filenames)
   filenames.each do |file|
     file_stat = File.stat(file)
-    print_file_type(file_stat)
+    print FILE_TYPE_MAP.fetch(file_stat.ftype, '?')
     print_permissions(file_stat)
     print " #{file_stat.nlink.to_s.rjust(3)}"
     print " #{Etc.getpwuid(file_stat.uid).name}"
@@ -37,13 +42,6 @@ def print_long_format(filenames)
   end
 end
 
-def print_file_type(file_stat)
-  type_map = {
-    'file' => '-',
-    'directory' => 'd',
-    'link' => 'l'
-  }
-  print type_map.fetch(file_stat.ftype, '?')
 end
 
 def print_permissions(file_stat)
