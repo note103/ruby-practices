@@ -29,6 +29,8 @@ def parse_options
 end
 
 def print_long_format(filenames)
+  puts "total #{calculate_total_blocks}"
+
   filenames.each do |file|
     file_stat = File.stat(file)
     print FILE_TYPE_MAP.fetch(file_stat.ftype, '?')
@@ -42,6 +44,12 @@ def print_long_format(filenames)
   end
 end
 
+def calculate_total_blocks
+  total_blocks = 0
+  Dir.glob('*').each do |file|
+    total_blocks += File.stat(file).blocks if File.file?(file)
+  end
+  total_blocks
 end
 
 def print_permissions(file_stat)
