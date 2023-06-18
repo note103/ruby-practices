@@ -47,7 +47,7 @@ end
 def calculate_total_blocks
   total_blocks = 0
   Dir.glob('*').each do |file|
-    total_blocks += File.stat(file).blocks if File.file?(file)
+    total_blocks += File.stat(file).blocks
   end
   total_blocks
 end
