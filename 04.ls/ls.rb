@@ -13,7 +13,7 @@ FILE_TYPE_MAP = {
 
 def main
   options = parse_options
-  filenames = Dir.glob('*')
+  filenames = current_directory_filenames
   options[:l] ? print_long_format(filenames) : print_columns_format(filenames)
 end
 
@@ -26,6 +26,10 @@ def parse_options
     opt.parse!(ARGV)
   end
   options
+end
+
+def current_directory_filenames
+  Dir.glob('*')
 end
 
 def print_long_format(filenames)
@@ -46,7 +50,7 @@ end
 
 def calculate_total_blocks
   total_blocks = 0
-  Dir.glob('*').each do |file|
+  current_directory_filenames.each do |file|
     total_blocks += File.stat(file).blocks
   end
   total_blocks
