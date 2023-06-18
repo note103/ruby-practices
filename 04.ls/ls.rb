@@ -35,8 +35,8 @@ end
 def print_long_format(contents)
   puts "total #{calculate_total_blocks}"
 
-  contents.each do |file|
-    file_stat = File.stat(file)
+  contents.each do |item|
+    file_stat = File.stat(item)
     print FILE_TYPE_MAP.fetch(file_stat.ftype, '?')
     print_permissions(file_stat)
     print " #{file_stat.nlink.to_s.rjust(3)}"
@@ -44,14 +44,14 @@ def print_long_format(contents)
     print " #{Etc.getgrgid(file_stat.gid).name}"
     print " #{file_stat.size.to_s.rjust(5)}"
     print " #{file_stat.mtime.strftime('%_m %e %H:%M')}"
-    puts " #{file}"
+    puts " #{item}"
   end
 end
 
 def calculate_total_blocks
   total_blocks = 0
-  current_directory_contents.each do |file|
-    total_blocks += File.stat(file).blocks
+  current_directory_contents.each do |item|
+    total_blocks += File.stat(item).blocks
   end
   total_blocks
 end
