@@ -35,7 +35,8 @@ def current_directory_contents(options = {})
 end
 
 def print_long_format(contents)
-  puts "total #{calculate_total_blocks}"
+  total_blocks = contents.sum { |item| File.stat(item).blocks }
+  puts "total #{total_blocks}"
 
   contents.each do |item|
     file_stat = File.stat(item)
@@ -48,14 +49,6 @@ def print_long_format(contents)
     print " #{file_stat.mtime.strftime('%_m %e %H:%M')}"
     puts " #{item}"
   end
-end
-
-def calculate_total_blocks
-  total_blocks = 0
-  current_directory_contents.each do |item|
-    total_blocks += File.stat(item).blocks
-  end
-  total_blocks
 end
 
 def print_permissions(file_stat)
