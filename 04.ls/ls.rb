@@ -35,18 +35,25 @@ def current_directory_contents(options = {})
 end
 
 def print_long_format(contents)
-  total_blocks = contents.sum { |item| File.stat(item).blocks }
-  puts "total #{total_blocks}"
+  stats = contents.map { |item| [item, File.stat(item)] }.to_h
+  print_total_blocks(contents, stats)
+  print_stats(stats)
+end
 
-  contents.each do |item|
-    file_stat = File.stat(item)
-    print FILE_TYPE_MAP.fetch(file_stat.ftype, '?')
-    print_permissions(file_stat)
-    print " #{file_stat.nlink.to_s.rjust(3)}"
-    print " #{Etc.getpwuid(file_stat.uid).name}"
-    print " #{Etc.getgrgid(file_stat.gid).name}"
-    print " #{file_stat.size.to_s.rjust(5)}"
-    print " #{file_stat.mtime.strftime('%_m %e %H:%M')}"
+def print_total_blocks(contents, stats)
+  total_blocks = contents.sum { |item| stats[item].blocks }
+  puts "total #{total_blocks}"
+end
+
+def print_stats(stats)
+  stats.each do |item, stat|
+    print FILE_TYPE_MAP.fetch(stat.ftype, '?')
+    print_permissions(stat)
+    print " #{stat.nlink.to_s.rjust(3)}"
+    print " #{Etc.getpwuid(stat.uid).name}"
+    print " #{Etc.getgrgid(stat.gid).name}"
+    print " #{stat.size.to_s.rjust(5)}"
+    print " #{stat.mtime.strftime('%_m %e %H:%M')}"
     puts " #{item}"
   end
 end
