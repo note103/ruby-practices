@@ -58,8 +58,8 @@ def print_stats(stats)
   end
 end
 
-def print_permissions(file_stat)
-  mode = file_stat.mode
+def print_permissions(stat)
+  mode = stat.mode
   print_permissions_for_user_type(mode >> 6)
   print_permissions_for_user_type(mode >> 3)
   print_permissions_for_user_type(mode)
