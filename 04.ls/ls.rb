@@ -13,7 +13,7 @@ FILE_TYPE_MAP = {
 
 def main
   options = parse_options
-  contents = current_directory_contents
+  contents = current_directory_contents(options)
   options[:l] ? print_long_format(contents) : print_columns_format(contents)
 end
 
@@ -28,8 +28,10 @@ def parse_options
   options
 end
 
-def current_directory_contents
-  Dir.glob('*')
+def current_directory_contents(options = {})
+  flags = options[:a] ? File::FNM_DOTMATCH : 0
+  contents = Dir.glob('*', flags)
+  options[:r] ? contents.reverse : contents
 end
 
 def print_long_format(contents)
