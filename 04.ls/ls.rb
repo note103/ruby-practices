@@ -28,7 +28,7 @@ def parse_options
   options
 end
 
-def current_directory_contents(options = {})
+def current_directory_contents(options)
   flags = options[:a] ? File::FNM_DOTMATCH : 0
   contents = Dir.glob('*', flags)
   options[:r] ? contents.reverse : contents
