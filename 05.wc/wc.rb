@@ -7,44 +7,36 @@ def main
   line_sum = word_sum = char_sum = 0
 
   ARGV.each do |item|
-    line, word, char = calculate_and_print_counts(item, options)
+    line, word, char = process_file(item, options)
     line_sum += line
     word_sum += word
     char_sum += char
   end
 
-  display_total(line_sum, word_sum, char_sum, options) if ARGV.size > 1
+  return unless ARGV.size > 1
+
+  total = format_counts(line_sum, word_sum, char_sum, options)
+  puts "#{total} total"
 end
 
-def calculate_and_print_counts(item, options)
+def process_file(item, options)
   text = File.read(item)
   line = text.count("\n")
   word = text.split.size
   char = text.bytesize
 
-  result = []
-  if options.empty?
-    result << line.to_s.rjust(8)
-    result << word.to_s.rjust(8)
-    result << char.to_s.rjust(8)
-  else
-    result << line.to_s.rjust(8) if options[:l]
-    result << word.to_s.rjust(8) if options[:w]
-    result << char.to_s.rjust(8) if options[:c]
-  end
-  result = result.join('')
+  result = format_counts(line, word, char, options)
   puts "#{result} #{item}"
 
   [line, word, char]
 end
 
-def display_total(line_sum, word_sum, char_sum, options)
-  result_sum = []
-  result_sum << line_sum.to_s.rjust(8) if options.empty? || options[:l]
-  result_sum << word_sum.to_s.rjust(8) if options.empty? || options[:w]
-  result_sum << char_sum.to_s.rjust(8) if options.empty? || options[:c]
-  result_sum = result_sum.join('')
-  puts "#{result_sum} total"
+def format_counts(line, word, char, options)
+  result = []
+  result << line.to_s.rjust(8) if options.empty? || options[:l]
+  result << word.to_s.rjust(8) if options.empty? || options[:w]
+  result << char.to_s.rjust(8) if options.empty? || options[:c]
+  result.join('')
 end
 
 def parse_options
