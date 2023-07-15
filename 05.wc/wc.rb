@@ -5,7 +5,7 @@ require 'optparse'
 def main
   options = parse_options
   total_count = { line_sum: 0, word_sum: 0, char_sum: 0 }
-  ARGV.empty? ? handle_stdin(options) : handle_files(total_count, options)
+  ARGV.empty? ? handle_stdin(options) : handle_files(options, total_count)
 end
 
 def parse_options
@@ -21,21 +21,25 @@ end
 
 def handle_stdin(options)
   text = $stdin.read
-  line, word, char = process_file(text)
-  puts format_counts(line, word, char, options)
+  process_and_print_results(text, options)
 end
 
-def handle_files(total_count, options)
-  ARGV.each do |item|
-    text = File.read(item)
-    line, word, char = process_file(text)
-    puts format_counts(line, word, char, options, item)
+def handle_files(options, total_count)
+  ARGV.each do |filename|
+    text = File.read(filename)
+    line, word, char = process_and_print_results(text, options, filename)
 
     total_count[:line_sum] += line
     total_count[:word_sum] += word
     total_count[:char_sum] += char
   end
-  caluculate_total(total_count, options) if ARGV.size > 1
+  caluculate_total(options, total_count) if ARGV.size > 1
+end
+
+def process_and_print_results(text, options, filename = nil)
+  line, word, char = process_file(text)
+  puts format_counts(options, line, word, char, filename)
+  [line, word, char]
 end
 
 def process_file(text)
@@ -45,17 +49,21 @@ def process_file(text)
   [line, word, char]
 end
 
-def format_counts(line, word, char, options, filename = nil)
+def format_counts(options, line, word, char, filename = nil)
   result = []
-  result << line.to_s.rjust(8) if options.empty? || options[:l]
-  result << word.to_s.rjust(8) if options.empty? || options[:w]
-  result << char.to_s.rjust(8) if options.empty? || options[:c]
+  if options.empty?
+    result = [line.to_s.rjust(8), word.to_s.rjust(8), char.to_s.rjust(8)]
+  else
+    result << line.to_s.rjust(8) if options[:l]
+    result << word.to_s.rjust(8) if options[:w]
+    result << char.to_s.rjust(8) if options[:c]
+  end
   result = result.join('')
   filename ? "#{result} #{filename}" : result
 end
 
-def caluculate_total(total_count, options)
-  total = format_counts(total_count[:line_sum], total_count[:word_sum], total_count[:char_sum], options)
+def caluculate_total(options, total_count)
+  total = format_counts(options, total_count[:line_sum], total_count[:word_sum], total_count[:char_sum])
   puts "#{total} total"
 end
 
