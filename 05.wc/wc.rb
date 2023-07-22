@@ -21,6 +21,7 @@ end
 def handle_stdin(options)
   text = $stdin.read
   process_and_print_results(text, options)
+  text_stats = analysis_text(text)
 end
 
 def handle_files(options)
@@ -29,10 +30,11 @@ def handle_files(options)
   ARGV.each do |filename|
     text = File.read(filename)
     line, word, char = process_and_print_results(text, options, filename)
+    text_stats = analysis_text(text)
 
-    total_count[:line_sum] += line
-    total_count[:word_sum] += word
-    total_count[:char_sum] += char
+    total_counts[:line] += text_stats[:line]
+    total_counts[:word] += text_stats[:word]
+    total_counts[:char] += text_stats[:char]
   end
 
 def process_and_print_results(text, options, filename = nil)
@@ -41,11 +43,12 @@ def process_and_print_results(text, options, filename = nil)
   [line, word, char]
 end
 
-def process_file(text)
-  line = text.count("\n")
-  word = text.split.size
-  char = text.bytesize
-  [line, word, char]
+def analysis_text(text)
+  {
+    line: text.count("\n"),
+    word: text.split.size,
+    char: text.bytesize
+  }
 end
 
 def format_counts(options, line, word, char, filename = nil)
