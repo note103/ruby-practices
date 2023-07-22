@@ -4,8 +4,7 @@ require 'optparse'
 
 def main
   options = parse_options
-  total_count = { line_sum: 0, word_sum: 0, char_sum: 0 }
-  ARGV.empty? ? handle_stdin(options) : handle_files(options, total_count)
+  ARGV.empty? ? handle_stdin(options) : handle_files(options)
 end
 
 def parse_options
@@ -24,7 +23,9 @@ def handle_stdin(options)
   process_and_print_results(text, options)
 end
 
-def handle_files(options, total_count)
+def handle_files(options)
+  total_counts = { line: 0, word: 0, char: 0 }
+
   ARGV.each do |filename|
     text = File.read(filename)
     line, word, char = process_and_print_results(text, options, filename)
@@ -33,8 +34,6 @@ def handle_files(options, total_count)
     total_count[:word_sum] += word
     total_count[:char_sum] += char
   end
-  caluculate_total(options, total_count) if ARGV.size > 1
-end
 
 def process_and_print_results(text, options, filename = nil)
   line, word, char = process_file(text)
@@ -62,9 +61,6 @@ def format_counts(options, line, word, char, filename = nil)
   filename ? "#{result} #{filename}" : result
 end
 
-def caluculate_total(options, total_count)
-  total = format_counts(options, total_count[:line_sum], total_count[:word_sum], total_count[:char_sum])
-  puts "#{total} total"
 end
 
 main
