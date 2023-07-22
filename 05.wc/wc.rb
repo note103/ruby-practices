@@ -21,6 +21,7 @@ end
 def handle_stdin(options)
   text = $stdin.read
   text_stats = analysis_text(text)
+  max_length = calculate_max_digits(text_stats)
   puts format_counts(options, text_stats, max_length)
 end
 
@@ -31,6 +32,7 @@ def handle_files(options)
     text = File.read(filename)
     text_stats = analysis_text(text)
 
+    max_length = calculate_max_digits(text_stats)
     puts format_counts(options, text_stats, max_length, filename)
 
     total_counts[:line] += text_stats[:line]
@@ -40,6 +42,7 @@ def handle_files(options)
 
   return unless ARGV.size > 1
 
+  max_length = calculate_max_digits(total_counts)
   total = format_counts(options, total_counts, max_length)
   puts "#{total} total"
 end
@@ -52,19 +55,25 @@ def analysis_text(text)
   }
 end
 
-def format_counts(options, line, word, char, filename = nil)
+def format_counts(options, text_stats, max_length, filename = nil)
   result = []
   if options.empty?
-    result = [line.to_s.rjust(8), word.to_s.rjust(8), char.to_s.rjust(8)]
+    result = [text_stats[:line].to_s.rjust(max_length[:line]), text_stats[:word].to_s.rjust(max_length[:word]), text_stats[:char].to_s.rjust(max_length[:char])]
   else
-    result << line.to_s.rjust(8) if options[:l]
-    result << word.to_s.rjust(8) if options[:w]
-    result << char.to_s.rjust(8) if options[:c]
+    result << text_stats[:line].to_s.rjust(max_length[:line]) if options[:l]
+    result << text_stats[:word].to_s.rjust(max_length[:word]) if options[:w]
+    result << text_stats[:char].to_s.rjust(max_length[:char]) if options[:c]
   end
   result = result.join('')
   filename ? "#{result} #{filename}" : result
 end
 
+def calculate_max_digits(text_stats)
+  max_length = { line: 8, word: 8, char: 8 }
+  max_length[:line] = [max_length[:line], text_stats[:line].to_s.size].max
+  max_length[:word] = [max_length[:word], text_stats[:word].to_s.size].max
+  max_length[:char] = [max_length[:char], text_stats[:char].to_s.size].max
+  max_length
 end
 
 main
