@@ -20,7 +20,7 @@ end
 
 def handle_stdin(options)
   text = $stdin.read
-  text_stats = analysis_text(text)
+  text_stats = analyze_text(text)
   max_length = calculate_max_digits(text_stats)
   puts format_counts(options, text_stats, max_length)
 end
@@ -30,7 +30,7 @@ def handle_files(options)
 
   ARGV.each do |filename|
     text = File.read(filename)
-    text_stats = analysis_text(text)
+    text_stats = analyze_text(text)
 
     max_length = calculate_max_digits(text_stats)
     puts format_counts(options, text_stats, max_length, filename)
@@ -47,7 +47,7 @@ def handle_files(options)
   puts "#{total} total"
 end
 
-def analysis_text(text)
+def analyze_text(text)
   {
     line: text.count("\n"),
     word: text.split.size,
