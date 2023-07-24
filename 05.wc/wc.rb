@@ -64,7 +64,7 @@ def format_counts(options, text_stats, max_length, filename = nil)
     result << text_stats[:word].to_s.rjust(max_length[:word]) if options[:w]
     result << text_stats[:char].to_s.rjust(max_length[:char]) if options[:c]
   end
-  result = result.join('')
+  result = result.join(' ')
   filename ? "#{result} #{filename}" : result
 end
 
