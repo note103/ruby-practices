@@ -2,6 +2,8 @@
 
 require 'optparse'
 
+INITIAL_MAX_LENGTH = { line: 8, word: 8, char: 8 }.freeze
+
 def main
   options = parse_options
   ARGV.empty? ? handle_stdin(options) : handle_files(options)
@@ -21,18 +23,19 @@ end
 def handle_stdin(options)
   text = $stdin.read
   text_stats = analyze_text(text)
-  max_length = calculate_max_digits(text_stats)
+  max_length = calculate_max_digits(text_stats, INITIAL_MAX_LENGTH.dup)
   puts format_counts(options, text_stats, max_length)
 end
 
 def handle_files(options)
   total_counts = { line: 0, word: 0, char: 0 }
+  max_length = INITIAL_MAX_LENGTH.dup
 
   ARGV.each do |filename|
     text = File.read(filename)
     text_stats = analyze_text(text)
 
-    max_length = calculate_max_digits(text_stats)
+    max_length = calculate_max_digits(text_stats, max_length)
     puts format_counts(options, text_stats, max_length, filename)
 
     total_counts[:line] += text_stats[:line]
@@ -42,7 +45,7 @@ def handle_files(options)
 
   return unless ARGV.size > 1
 
-  max_length = calculate_max_digits(total_counts)
+  max_length = calculate_max_digits(total_counts, max_length)
   total = format_counts(options, total_counts, max_length)
   puts "#{total} total"
 end
@@ -68,12 +71,12 @@ def format_counts(options, text_stats, max_length, filename = nil)
   filename ? "#{result} #{filename}" : result
 end
 
-def calculate_max_digits(text_stats)
-  max_length = { line: 8, word: 8, char: 8 }
-  max_length[:line] = [max_length[:line], text_stats[:line].to_s.size].max
-  max_length[:word] = [max_length[:word], text_stats[:word].to_s.size].max
-  max_length[:char] = [max_length[:char], text_stats[:char].to_s.size].max
-  max_length
+def calculate_max_digits(text_stats, max_length)
+  updated_max_length = max_length.dup
+  updated_max_length[:line] = [max_length[:line], text_stats[:line].to_s.size].max
+  updated_max_length[:word] = [max_length[:word], text_stats[:word].to_s.size].max
+  updated_max_length[:char] = [max_length[:char], text_stats[:char].to_s.size].max
+  updated_max_length
 end
 
 main
